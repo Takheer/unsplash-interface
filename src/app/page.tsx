@@ -38,9 +38,9 @@ export default function Home() {
     setUnsplashImages(prevState => [...prevState, ...result.images]);
     setMetadata(prevState => ({
       ...prevState,
-      downloaded: result.imgsPerPage * result.currentPage,
+      downloaded: result.imgsPerPage * currentPage,
     }))
-    setCurrentPage(result.currentPage! + 1);
+    setCurrentPage(currentPage! + 1);
   }
   const handleClear = () => setText('');
   const handleModalClose = () => {
