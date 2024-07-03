@@ -32,7 +32,7 @@ const apiProvider = {
         small: res.urls.thumb,
         fullLink: res.urls.full,
         alt: res.alt_description
-      }) as UnsplashImage[]),
+      }) as UnsplashImage),
       total: data.total,
       totalPages: data.total_pages,
       imgsPerPage: PER_PAGE,
