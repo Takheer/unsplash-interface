@@ -4,22 +4,43 @@ import api, {UnsplashImage} from "@/services/apiProvider";
 import {useState} from "react";
 import Image from "next/image";
 
+type ImagesMetadata = {
+  total: number
+  downloaded: number
+}
 
 export default function Home() {
   const [text, setText] = useState('');
-  const [unsplashImages, setUnsplashImages] = useState([] as UnsplashImage[])
+  const [unsplashImages, setUnsplashImages] = useState([] as UnsplashImage[]);
+  const [metadata, setMetadata] = useState({} as ImagesMetadata);
+  const [currentPage, setCurrentPage] = useState(1)
   const [fullImageSrc, setFullImageSrc] = useState('');
   const [isModalShown, setIsModalShown] = useState(false);
   const [isNoResults, setIsNoResults] = useState(false);
 
   const handleClick = async (query: string) => {
     const result = await api.retrieveImages(query);
-    if (result.length) {
-      setUnsplashImages(result);
+    if (result.images.length) {
+      setUnsplashImages(result.images);
+      setMetadata({
+        total: result.total,
+        downloaded: result.imgsPerPage,
+      })
+      setCurrentPage(2);
       setIsNoResults(false);
     } else {
       setIsNoResults(true);
     }
+  }
+
+  const handlePagination = async () => {
+    const result = await api.retrieveImages(text, currentPage);
+    setUnsplashImages(prevState => [...prevState, ...result.images]);
+    setMetadata(prevState => ({
+      ...prevState,
+      downloaded: result.imgsPerPage * result.currentPage,
+    }))
+    setCurrentPage(result.currentPage! + 1);
   }
   const handleClear = () => setText('');
   const handleModalClose = () => {
@@ -47,7 +68,7 @@ export default function Home() {
               type='text'
               placeholder='Телефоны, яблоки, груши...'
               value={text}
-              onInput={(e) => setText(e.target.value)}
+              onInput={(e) => setText((e.target as HTMLTextAreaElement).value)}
             />
             {text.length ?
               <Image
@@ -81,6 +102,8 @@ export default function Home() {
               onClick={() => showFullImage(img.fullLink)}
             />))}
         </div>}
+        {metadata.total > metadata.downloaded ? <button onClick={handlePagination}>Загрузить ещё</button> : null}
+
       </div>
       {isModalShown ? (
       <div className={`${styles.modalBackground} flex justify-center items-center`}>
@@ -95,7 +118,7 @@ export default function Home() {
           alt='Закрыть'
           width={24}
           height={24}
-          className={`${styles.closeBtn} absolute right-2 top-2 cursor-pointer z-30`}
+          className={`absolute right-2 top-2 cursor-pointer z-30`}
           onClick={handleModalClose}
         />
         <Image src={fullImageSrc} alt={''} width={760} height={760} className={'z-20'}/>
