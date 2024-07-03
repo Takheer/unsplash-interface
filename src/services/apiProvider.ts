@@ -24,7 +24,9 @@ const PER_PAGE = 30;
 
 const apiProvider = {
   async retrieveImages(query: string, page?: number) {
-    const res = await fetch(`https://api.unsplash.com/search/photos?client_id=${process.env.NEXT_PUBLIC_CLIENT_ID}&query=${query}&page=${page || 1}&per_page=${PER_PAGE}&lang=ru`)
+    const req = `https://api.unsplash.com/search/photos?client_id=${process.env.NEXT_PUBLIC_CLIENT_ID}&query=${query}&page=${page || 1}&per_page=${PER_PAGE}&lang=ru`;
+    console.log(req)
+    const res = await fetch(req);
     const data = await res.json() as UnsplashResponse;
     return {
       images: data.results.map((res: UnsplashResult) => ({

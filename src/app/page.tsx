@@ -1,8 +1,9 @@
 'use client'
 import styles from './styles.module.scss'
 import api, {UnsplashImage} from "@/services/apiProvider";
-import {useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import Image from "next/image";
+import {throttle} from "@/services/utils";
 
 type ImagesMetadata = {
   total: number
@@ -17,6 +18,7 @@ export default function Home() {
   const [fullImageSrc, setFullImageSrc] = useState('');
   const [isModalShown, setIsModalShown] = useState(false);
   const [isNoResults, setIsNoResults] = useState(false);
+  const [isFetchingMore, setIsFetchingMore] = useState(false)
 
   const handleClick = async (query: string) => {
     const result = await api.retrieveImages(query);
@@ -40,17 +42,43 @@ export default function Home() {
       ...prevState,
       downloaded: result.imgsPerPage * currentPage,
     }))
-    setCurrentPage(currentPage! + 1);
+    setCurrentPage(currentPage + 1);
   }
+
   const handleClear = () => setText('');
+
   const handleModalClose = () => {
     setFullImageSrc('')
     setIsModalShown(false)
   }
+
   const showFullImage = (src: string) => {
     setFullImageSrc(src)
     setIsModalShown(true)
   }
+
+  const debouncedSet = useMemo(() => throttle(() => setIsFetchingMore(true), 1000), []);
+
+  const scrollHandler = async (e: any) => {
+    if(e.target.documentElement.scrollHeight - e.target.documentElement.scrollTop - window.innerHeight < 50)
+    {
+      debouncedSet();
+    }
+  }
+
+  useEffect(() => {
+    document.addEventListener('scroll', scrollHandler);
+    return () => {
+      document.removeEventListener('scroll', scrollHandler);
+    }
+  },[])
+
+  useEffect(() => {
+    if (isFetchingMore && metadata.total > metadata.downloaded) {
+      setIsFetchingMore(false);
+      handlePagination();
+    }
+  }, [isFetchingMore]);
 
   return (
     <main className={`flex min-h-screen flex-col items-center justify-between px-4 md:px-8`}>
@@ -91,10 +119,10 @@ export default function Home() {
           К сожалению, поиск не дал результатов
         </p>) :
         <div className={`${styles.results} flex flex-row gap-2 justify-center items-center flex-wrap py-4`}>
-          {unsplashImages.map((img: UnsplashImage) => (
+          {unsplashImages.map((img: UnsplashImage, i: number) => (
             <Image
-              key={img.id}
-              className={styles.resultImg}
+              key={`${i}-${img.id}`}
+              className={`${styles.resultImg} cursor-pointer`}
               src={img.small}
               alt={img.alt}
               width={200}
@@ -102,8 +130,6 @@ export default function Home() {
               onClick={() => showFullImage(img.fullLink)}
             />))}
         </div>}
-        {metadata.total > metadata.downloaded ? <button onClick={handlePagination}>Загрузить ещё</button> : null}
-
       </div>
       {isModalShown ? (
       <div className={`${styles.modalBackground} flex justify-center items-center`}>
