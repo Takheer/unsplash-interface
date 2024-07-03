@@ -1,7 +1,7 @@
-export const throttle = (mainFunction, delay) => {
+export const throttle = (mainFunction: Function, delay: number) => {
   let timerFlag = null;
 
-  return (...args) => {
+  return (...args: any) => {
     if (timerFlag === null) {
       mainFunction(...args);
       timerFlag = setTimeout(() => {
