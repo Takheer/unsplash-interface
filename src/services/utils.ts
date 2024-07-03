@@ -1,5 +1,5 @@
 export const throttle = (mainFunction: Function, delay: number) => {
-  let timerFlag = null;
+  let timerFlag: NodeJS.Timeout | null = null;
 
   return (...args: any) => {
     if (timerFlag === null) {
