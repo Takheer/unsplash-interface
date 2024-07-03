@@ -26,7 +26,7 @@ export default function Home() {
     setFullImageSrc('')
     setIsModalShown(false)
   }
-  const showFullImage = (src) => {
+  const showFullImage = (src: string) => {
     setFullImageSrc(src)
     setIsModalShown(true)
   }
