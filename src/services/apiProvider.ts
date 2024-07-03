@@ -5,14 +5,29 @@ export type UnsplashImage = {
   alt: string
 }
 
+type UnsplashResult = {
+  id: string,
+  urls: {
+    thumb: string,
+    full: string,
+  }
+  alt_description: string
+}
+
+type UnsplashResponse = {
+  results: UnsplashResult[],
+  total: number,
+  total_pages: number
+}
+
 const PER_PAGE = 30;
 
 const apiProvider = {
   async retrieveImages(query: string, page?: number) {
     const res = await fetch(`https://api.unsplash.com/search/photos?client_id=${process.env.NEXT_PUBLIC_CLIENT_ID}&query=${query}&page=${page || 1}&per_page=${PER_PAGE}&lang=ru`)
-    const data = await res.json();
+    const data = await res.json() as UnsplashResponse;
     return {
-      images: data.results.map(res => ({
+      images: data.results.map((res: UnsplashResult) => ({
         id: res.id,
         small: res.urls.thumb,
         fullLink: res.urls.full,
