@@ -83,7 +83,7 @@ export default function Home() {
   return (
     <main className={`flex min-h-screen flex-col items-center justify-between px-4 md:px-8`}>
       <div className='flex flex-col items-center w-full'>
-        <div className={`${styles.searchRow} ${styles.responsiveContainer} flex flex-row items-center w-full ${unsplashImages.length || isNoResults ? 'pt-8 justify-start' : 'pt-48 justify-center'}`}>
+        <div className={`${styles.searchRow} ${styles.responsiveContainer} flex flex-row items-center w-full pb-8 ${unsplashImages.length || isNoResults ? 'pt-12 justify-start sticky top-0 z-20 bg-white' : 'pt-48 justify-center'}`}>
           <div className={`${styles.inputContainer} flex flex-row justify-center items-center text-black h-12 border-radius-12`}>
             <Image
               alt={'Найти'}
@@ -118,7 +118,7 @@ export default function Home() {
         (<p className={`${styles.placeholder} ${styles.responsiveContainer} flex flex-row items-center w-full`}>
           К сожалению, поиск не дал результатов
         </p>) :
-        <div className={`${styles.results} flex flex-row gap-2 justify-center items-center flex-wrap py-4`}>
+        <div className={`${styles.results} flex flex-row gap-2 justify-center items-center flex-wrap`}>
           {unsplashImages.map((img: UnsplashImage, i: number) => (
             <Image
               key={`${i}-${img.id}`}
@@ -127,14 +127,14 @@ export default function Home() {
               alt={img.alt}
               width={200}
               height={200}
-              onClick={() => showFullImage(img.fullLink)}
+              onClick={() => showFullImage(img.small)}
             />))}
         </div>}
       </div>
       {isModalShown ? (
-      <div className={`${styles.modalBackground} flex justify-center items-center`}>
+      <div className={`${styles.modalBackground} flex justify-center items-center z-20`}>
         <Image
-          className='fixed left-1/2 top-1/2 z-10 animate-spin'
+          className='fixed left-1/2 top-1/2 z-20 animate-spin'
           src={'/icons/spinner.svg'} alt={''}
           width={48}
           height={48}
@@ -142,9 +142,9 @@ export default function Home() {
         <Image
           src={'/icons/closeModal.svg'}
           alt='Закрыть'
-          width={24}
-          height={24}
-          className={`absolute right-2 top-2 cursor-pointer z-30`}
+          width={32}
+          height={32}
+          className={`absolute right-5 top-5 cursor-pointer z-40`}
           onClick={handleModalClose}
         />
         <Image src={fullImageSrc} alt={''} width={760} height={760} className={'z-20'}/>

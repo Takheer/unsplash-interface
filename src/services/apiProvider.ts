@@ -10,6 +10,8 @@ type UnsplashResult = {
   urls: {
     thumb: string,
     full: string,
+    regular: string,
+    small: string
   }
   alt_description: string
 }
@@ -31,7 +33,7 @@ const apiProvider = {
     return {
       images: data.results.map((res: UnsplashResult) => ({
         id: res.id,
-        small: res.urls.thumb,
+        small: res.urls.regular,
         fullLink: res.urls.full,
         alt: res.alt_description
       }) as UnsplashImage),
