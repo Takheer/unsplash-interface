@@ -21,6 +21,8 @@ export default function Home() {
   const [isFetchingMore, setIsFetchingMore] = useState(false)
 
   const handleClick = async (query: string) => {
+    if (!text) return;
+
     const result = await api.retrieveImages(query);
     if (result.images.length) {
       setUnsplashImages(result.images);
@@ -133,12 +135,6 @@ export default function Home() {
       </div>
       {isModalShown ? (
       <div className={`${styles.modalBackground} flex justify-center items-center z-20`}>
-        <Image
-          className='fixed left-1/2 top-1/2 z-20 animate-spin'
-          src={'/icons/spinner.svg'} alt={''}
-          width={48}
-          height={48}
-        />
         <Image
           src={'/icons/closeModal.svg'}
           alt='Закрыть'
