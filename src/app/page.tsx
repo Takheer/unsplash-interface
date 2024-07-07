@@ -52,11 +52,13 @@ export default function Home() {
   const handleModalClose = () => {
     setFullImageSrc('')
     setIsModalShown(false)
+    document.body.classList.remove('overflow-hidden');
   }
 
   const showFullImage = (src: string) => {
     setFullImageSrc(src)
     setIsModalShown(true)
+    document.body.classList.add('overflow-hidden');
   }
 
   const debouncedSet = useMemo(() => throttle(() => setIsFetchingMore(true), 1000), []);
@@ -85,7 +87,7 @@ export default function Home() {
   return (
     <main className={`flex min-h-screen flex-col items-center justify-between px-4 md:px-8`}>
       <div className='flex flex-col items-center w-full'>
-        <div className={`${styles.searchRow} ${styles.responsiveContainer} flex flex-row items-center w-full pb-8 ${unsplashImages.length || isNoResults ? 'pt-12 justify-start sticky top-0 z-20 bg-white' : 'pt-48 justify-center'}`}>
+        <div className={`${styles.searchRow} ${styles.responsiveContainer} flex flex-row items-center w-full pb-4 ${unsplashImages.length || isNoResults ? 'pt-2.5 md:pt-12 justify-start sticky top-0 z-20 bg-white' : 'pt-48 justify-center'}`}>
           <div className={`${styles.inputContainer} flex flex-row justify-center items-center text-black h-12 border-radius-12`}>
             <Image
               alt={'Найти'}
@@ -99,6 +101,7 @@ export default function Home() {
               placeholder='Телефоны, яблоки, груши...'
               value={text}
               onInput={(e) => setText((e.target as HTMLTextAreaElement).value)}
+              onKeyPress={(e) => e.key == 'Enter' ? handleClick(text) : null}
             />
             {text.length ?
               <Image
@@ -120,21 +123,21 @@ export default function Home() {
         (<p className={`${styles.placeholder} ${styles.responsiveContainer} flex flex-row items-center w-full`}>
           К сожалению, поиск не дал результатов
         </p>) :
-        <div className={`${styles.results} flex flex-row gap-2 justify-center items-center flex-wrap`}>
+        <div className={`${styles.results} flex flex-row gap-2 justify-center items-center flex-wrap pt-4`}>
           {unsplashImages.map((img: UnsplashImage, i: number) => (
             <Image
               key={`${i}-${img.id}`}
-              className={`${styles.resultImg} cursor-pointer`}
+              className={`${styles.resultImg} cursor-pointer `}
               src={img.small}
               alt={img.alt}
               width={200}
               height={200}
-              onClick={() => showFullImage(img.small)}
+              onClick={() => showFullImage(img.fullLink)}
             />))}
         </div>}
       </div>
       {isModalShown ? (
-      <div className={`${styles.modalBackground} flex justify-center items-center z-20`}>
+      <div className={`${styles.modalBackground} flex justify-center items-start md:items-center z-20`}>
         <Image
           src={'/icons/closeModal.svg'}
           alt='Закрыть'
